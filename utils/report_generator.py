@@ -36,7 +36,9 @@ def generate_pdf_report(compatibility, verdict, matches, gaps, improvements):
     pdf.set_font("Helvetica", "", 11)
     if gaps and len(gaps) > 0:
         for gap in gaps:
-            pdf.multi_cell(0, 7, f"x {gap}")
+            # Replaces any markdown asterisks or bullet formatting to print cleanly
+            clean_gap = str(gap).replace("• ", "").replace("* ", "")
+            pdf.multi_cell(0, 7, f"x {clean_gap}")
     else:
         pdf.cell(0, 7, "No explicit skills omissions flagged.", ln=True)
     pdf.ln(5)
@@ -47,10 +49,11 @@ def generate_pdf_report(compatibility, verdict, matches, gaps, improvements):
     pdf.set_font("Helvetica", "", 11)
     if improvements and len(improvements) > 0:
         for imp in improvements:
-            pdf.multi_cell(0, 7, f"* {imp}")
+            clean_imp = str(imp).replace("• ", "").replace("* ", "")
+            pdf.multi_cell(0, 7, f"* {clean_imp}")
     else:
         pdf.cell(0, 7, "No structural improvements suggested.", ln=True)
         
-    # Output safely to a byte stream
+    # Get raw output bytes directly and convert cleanly to stream
     pdf_bytes = pdf.output()
-    return io.BytesIO(pdf_bytes) if isinstance(pdf_bytes, bytes) else io.BytesIO(pdf_bytes.encode('latin1'))
+    return io.BytesIO(pdf_bytes)
