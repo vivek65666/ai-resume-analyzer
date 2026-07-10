@@ -3,7 +3,7 @@
 An enterprise-grade, high-performance resume analysis application built using Python, Streamlit, and the Google Gemini-2.5-Flash LLM. This application tokenizes, parses, and contrasts a candidate’s PDF resume profile directly against target corporate job mandates to provide real-time ATS compatibility scoring, gap isolation, and granular bullet-point improvement plans.
 
 ## 🖥️ System Preview
-![AI Resume Analyzer Dashboard](Screenshots/Ai resume analyzer.png)
+<img src="Screenshots/Ai resume analyzer.png" alt="AI Resume Analyzer Dashboard" width="100%">
 
 ---
 
