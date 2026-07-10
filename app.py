@@ -5,8 +5,10 @@ load_dotenv()
 
 from components.sidebar import render_sidebar
 from components.ui import render_dashboard_metrics
+
 from utils.parser import extract_text_from_pdf
 from utils.helper import analyze_resume_with_llm
+from utils.report_generator import generate_pdf_report # <-- Added import
 
 st.set_page_config(page_title="Enterprise AI Resume Analyzer", page_icon="💼", layout="wide")
 config = render_sidebar()
@@ -47,7 +49,38 @@ with col_display:
                         job_description=job_desc_input,
                         model=config["model"]
                     )
+                    
+                    # 1. Render the main dashboard visual indicators
                     render_dashboard_metrics(analysis_payload)
+                    
+                    # 2. Extract structured elements dynamically from the LLM JSON response
+                    # (Uses defensive .get() methods to prevent KeyErrors)
+                    compatibility_score = analysis_payload.get("compatibility_score", 0)
+                    verdict = analysis_payload.get("verdict", "N/A")
+                    matches = analysis_payload.get("technical_matches", [])
+                    gaps = analysis_payload.get("skills_gaps", [])
+                    improvements = analysis_payload.get("improvements", [])
+                    
+                    # 3. Generate the in-memory PDF array
+                    pdf_data = generate_pdf_report(
+                        compatibility=compatibility_score,
+                        verdict=verdict,
+                        matches=matches,
+                        gaps=gaps,
+                        improvements=improvements
+                    )
+                    
+                    st.divider()
+                    
+                    # 4. Expose the clean download button
+                    st.download_button(
+                        label="📥 Download ATS Optimization Report (PDF)",
+                        data=pdf_data,
+                        file_name="ATS_Optimization_Report.pdf",
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+                    
                 except Exception as error:
                     st.error(f"Fatal operational pipeline exception error: {error}")
     else:
